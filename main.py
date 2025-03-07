@@ -9,11 +9,18 @@ from nltk.tokenize import word_tokenize
 class NGramModel:
   def __init__(self, text):
     self.text = text
-    self.tokens = word_tokenize(text, language='english')
+    self.tokens = self._preprocess_text(text)
     self.bigram_counts = Counter(bigrams(self.tokens))
     self.trigram_counts = Counter(trigrams(self.tokens))
     self.unigram_counts = Counter(self.tokens)
 
+  def _preprocess_text(self, text):
+    """Cleans and tokenizes text."""
+    text = text.lower() 
+    text = re.sub(r'[^a-z\s]', '', text)  
+    text = re.sub(r'\s+', ' ', text).strip()  
+    return word_tokenize(text)
+  
   def __bigram_probabilities(self):
     bigram_probs = { bigram: round(count / self.unigram_counts[bigram[0]], 3) for bigram, count in self.bigram_counts.items() }
     return bigram_probs
@@ -81,7 +88,7 @@ def main():
   #   print(f"C({trigram[0] + ', ' + trigram[1] + ', ' + trigram[2]}) = {ngram_model.trigram_counts[trigram]}")
   #   print(f"C({trigram[0] + ', ' + trigram[1]}) = {ngram_model.bigram_counts[trigram[0], trigram[1]]}\n")
 
-  gen_text = ngram_model.generate_text('the', 4, 'bigram')
+  gen_text = ngram_model.generate_text('the', 8, 'bigram')
   print(f'Bi-gram Generated Text: "{gen_text}"')
   print(f'Tri-gram Perplexity: {ngram_model.perplexity(gen_text, "trigram")}\n')
   print(f'Bi-gram Perplexity: {ngram_model.perplexity(gen_text)}')
