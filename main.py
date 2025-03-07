@@ -65,7 +65,7 @@ class NGramModel:
     else:
         raise ValueError("Invalid n-gram type. Use 'bigram' or 'trigram'.")
 
-    print(f'N-Gram Probabilities: {gen_token_probs}')
+    # print(f'N-Gram Probabilities: {gen_token_probs}')
     
     log_sum = sum(math.log(prob) for prob in gen_token_probs)
     
@@ -82,16 +82,24 @@ def main():
 
   ngram_model = NGramModel(wiki_text)
 
-  # Use the below code to print the probabilities and counts of bigrams and trigrams
-  # for trigram, prob in ngram_model.trigram_probabilities().items():
-  #   print(f"P({trigram[2]} | {trigram[0]}, {trigram[1]}) = {prob: .4f}")
-  #   print(f"C({trigram[0] + ', ' + trigram[1] + ', ' + trigram[2]}) = {ngram_model.trigram_counts[trigram]}")
-  #   print(f"C({trigram[0] + ', ' + trigram[1]}) = {ngram_model.bigram_counts[trigram[0], trigram[1]]}\n")
+  test_sentence = "The banach-tarski paradox is a theorem in set-theoretic geometry which states that a solid ball in three-dimensional space can be split into a finite number of non-overlapping pieces, which can then be put back together in a different way to yield two identical copies of the original ball"
 
-  gen_text = ngram_model.generate_text('the', 8, 'bigram')
-  print(f'Bi-gram Generated Text: "{gen_text}"')
-  print(f'Tri-gram Perplexity: {ngram_model.perplexity(gen_text, "trigram")}\n')
-  print(f'Bi-gram Perplexity: {ngram_model.perplexity(gen_text)}')
+  # Normalize text
+  normalized_text = test_sentence.lower() 
+  normalized_text = re.sub(r'[^a-z\s]', '', normalized_text)  
+  normalized_text = re.sub(r'\s+', ' ', normalized_text).strip()  
+
+  bigram_perplexity = ngram_model.perplexity(normalized_text, 'bigram')
+  trigram_perplexity = ngram_model.perplexity(normalized_text, 'trigram')
+
+  print(f"Bigram Model Perplexity -> Test Sentence: \"{test_sentence}\" -> Score: {bigram_perplexity} \n")
+  print(f"Trigram Model Perplexity -> Test Sentence: \"{test_sentence}\" -> Score: {trigram_perplexity}")
+
+  # Text Generator
+  # gen_text = ngram_model.generate_text('the', 8, 'bigram')
+  # print(f'Bi-gram Generated Text: "{gen_text}"')
+  # print(f'Tri-gram Perplexity: {ngram_model.perplexity(gen_text, "trigram")}\n')
+  # print(f'Bi-gram Perplexity: {ngram_model.perplexity(gen_text)}')
 
 
 if __name__ == '__main__':
